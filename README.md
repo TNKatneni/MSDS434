@@ -49,6 +49,9 @@ README.md  # Project documentation
     ```bash
     python scripts/destroy.py
 
+6. **Test**
 
 
 
+
+Testing GitHub Actions
