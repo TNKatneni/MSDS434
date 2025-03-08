@@ -50,8 +50,4 @@ README.md  # Project documentation
     python scripts/destroy.py
 
 6. **Test**
-
-
-
-
-Testing GitHub Actions
+Testing for demo10
