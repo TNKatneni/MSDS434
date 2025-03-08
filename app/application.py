@@ -8,10 +8,12 @@ from prometheus_flask_exporter import PrometheusMetrics
 app = Flask(__name__)
 application = app
 
+
 # ✅ Define `/metrics` manually
 @app.route('/metrics', methods=['GET'])
 def metrics_endpoint():
     return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
+
 
 # ✅ Initialize Prometheus AFTER defining `/metrics`
 metrics = PrometheusMetrics(app)
@@ -19,9 +21,11 @@ metrics = PrometheusMetrics(app)
 SM_ENDPOINT_NAME = os.environ.get("SM_ENDPOINT_NAME", "my-housing-endpoint")
 AWS_REGION = "us-east-1"
 
+
 @app.route('/', methods=['GET'])
 def health_check():
     return jsonify({"message": "Housing Prediction API is up!"})
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -60,6 +64,7 @@ def predict():
 
     except Exception as e:
         return jsonify({"error": f"SageMaker invocation failed: {str(e)}"}), 500
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
