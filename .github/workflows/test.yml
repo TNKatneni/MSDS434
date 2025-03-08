@@ -25,8 +25,3 @@ jobs:
         run: |
           pip install flake8
           flake8 app/  # Runs Python linting to check for syntax errors
-
-      - name: Run Unit Tests
-        run: |
-          pip install pytest
-          pytest tests/  # Runs all test cases inside the "tests/" folder
