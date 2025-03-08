@@ -50,8 +50,10 @@ def predict():
             EndpointName=SM_ENDPOINT_NAME,
             Body=csv_payload,
             ContentType="text/csv"
+        ) # noqa: E501
+        result = json.loads(
+            response['Body'].read().decode("utf-8")
         )
-        result = json.loads(response['Body'].read().decode("utf-8"))
 
         if isinstance(result, dict):
             prediction = result.get("predictions", [None])[0] or list(result.values())[0]
@@ -63,7 +65,9 @@ def predict():
         return jsonify({"prediction": prediction})
 
     except Exception as e:
-        return jsonify({"error": f"SageMaker invocation failed: {str(e)}"}), 500
+        return jsonify({
+            "error": f"SageMaker invocation failed: {str(e)}"
+        }), 500
 
 
 if __name__ == "__main__":
