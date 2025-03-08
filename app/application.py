@@ -44,7 +44,8 @@ def predict():
     features = [bedrooms, bathrooms, lot_size, house_size]
     csv_payload = ",".join(str(x) for x in features)
 
-    sagemaker_runtime = boto3.client("sagemaker-runtime", region_name=AWS_REGION)
+    sagemaker_runtime = boto3.client(
+        "sagemaker-runtime", region_name=AWS_REGION)
     try:
         response = sagemaker_runtime.invoke_endpoint(
             EndpointName=SM_ENDPOINT_NAME,
@@ -56,7 +57,8 @@ def predict():
         )  # noqa: E501
 
         if isinstance(result, dict):
-            prediction = result.get("predictions", [None])[0] or list(result.values())[0]
+            prediction = result.get("predictions", 
+                [None])[0] or list(result.values())[0]
         elif isinstance(result, list):
             prediction = result[0]
         else:
