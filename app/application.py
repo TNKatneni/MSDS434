@@ -58,7 +58,7 @@ def predict():
 
         if isinstance(result, dict):
             prediction = result.get(
-                "predictions",[None]
+                "predictions", [None]
             )[0] or list(result.values())[0]
         elif isinstance(result, list):
             prediction = result[0]
