@@ -12,29 +12,24 @@ Google Drive Link: https://drive.google.com/drive/folders/1ViCtnuH5xBPZPYHfUDzNV
 This project is deployed on AWS Elastic Beanstalk, with the predictive model hosted on AWS SageMaker. The API is publicly accessible (for a limited time), allowing users to test housing price predictions without needing to deploy the application themselves.
 
 ## Project Structure
-housing-prediction/
-│── .github/workflows/
-│   └── test.yml              # CI/CD Workflow for testing (if applicable)
-│
-│── app/
-│   ├── .ebextensions/        # Elastic Beanstalk configuration
-│       └──prometheus.config  # Prometheus monitoring config
-│   ├── application.py        # Flask API application
-│   ├── requirements.txt      # Required dependencies
-│
-│── data/
-│   ├── raw_housing_data.csv  # Original dataset
-│   ├── sampled_data.csv      # Processed dataset for modeling
-│
-│── scripts/
-│   ├── app_bundle.zip        # Deployment bundle for AWS Elastic Beanstalk
-│   ├── deploy.py             # Deployment automation script
-│   ├── destroy.py            # Cleanup script for AWS resources
-│   ├── preprocess.py         # Data preprocessing script
-│
-│── .gitignore                # Ignore unnecessary files
-│── README.md                 # Project documentation
-│── test.ipynb                # Jupyter Notebook for API testing
+- .github/workflows/
+-     test.yml – CI/CD workflow for testing (if applicable)
+- app/
+-     .ebextensions/ – Elastic Beanstalk configuration
+-         prometheus.config – Prometheus monitoring config
+- application.py – Flask API application
+- requirements.txt – Required dependencies
+- data/
+- raw_housing_data.csv – Original dataset
+- sampled_data.csv – Processed dataset for modeling
+- scripts/
+-     app_bundle.zip – Deployment bundle for AWS Elastic Beanstalk
+-     deploy.py – Deployment automation script
+-     destroy.py – Cleanup script for AWS resources
+-     preprocess.py – Data preprocessing script
+- .gitignore – Ignore unnecessary files
+- README.md – Project documentation
+- test.ipynb – Jupyter Notebook for API testing
 
 
 ## API Testing Instructions 
