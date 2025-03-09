@@ -9,7 +9,7 @@ Google Drive Link: https://drive.google.com/drive/folders/1ViCtnuH5xBPZPYHfUDzNV
 ## Overview
 - This project aims to analyze housing market data to develop predictive models for home price trends. It includes data preprocessing, model training, and deployment using cloud-based services.
 
-This project is deployed on AWS Elastic Beanstalk, with the predictive model hosted on AWS SageMaker. The API is publicly accessible (for a limited time), allowing users to test housing price predictions without needing to deploy the application themselves.
+- This project is deployed on AWS Elastic Beanstalk, with the predictive model hosted on AWS SageMaker. The API is publicly accessible (for a limited time), allowing users to test housing price predictions without needing to deploy the application themselves.
 
 ## Project Structure
 - **.github/workflows/**
