@@ -71,4 +71,8 @@ print("\nTesting Prediction Endpoint...")
 test_prediction()
 
 ```
+## Monitoring with Prometheus 📊
+Prometheus is deployed alongside the application and can be accessed via a web interface.
+
+The Prometheus UI can be accessed here: http://3.235.130.3:9090/
 
