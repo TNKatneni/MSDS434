@@ -397,63 +397,6 @@ def install_dependencies(instance_ip, ssh_key_path):
     print("✅ Dependencies installed!")
     ssh.close()
 
-
-def setup_monitoring(env_name):
-    """
-    Automatically configures Prometheus & Grafana on the EB instance.
-    """
-    wait_for_eb_environment(env_name)  # Ensure EB environment is ready
-    instance_ip = get_eb_instance_ip(env_name)  # Retrieve instance IP
-    ssh_key_path = "/Users/tarunkatneni/Desktop/Cloud Computing/housingpredict.pem"
-
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(instance_ip, username="ec2-user", key_filename=ssh_key_path)
-
-    print("📦 Installing Prometheus & Grafana...")
-    commands = [
-        # Install Grafana
-        "wget https://dl.grafana.com/oss/release/grafana-10.0.3-1.x86_64.rpm",
-        "sudo yum localinstall -y grafana-10.0.3-1.x86_64.rpm",
-        "sudo systemctl enable grafana-server",
-        "sudo systemctl start grafana-server",
-        
-        # Install Prometheus
-        "wget https://github.com/prometheus/prometheus/releases/download/v2.51.2/prometheus-2.51.2.linux-amd64.tar.gz",
-        "tar -xvf prometheus-2.51.2.linux-amd64.tar.gz",
-        "sudo mv prometheus-2.51.2.linux-amd64 /opt/prometheus",
-        "sudo ln -s /opt/prometheus/prometheus /usr/local/bin/"
-    ]
-
-    for cmd in commands:
-        ssh.exec_command(cmd)
-        time.sleep(5)
-
-    # Ensure Prometheus directory exists
-    ssh.exec_command("sudo mkdir -p /etc/prometheus")
-
-    # Create Prometheus config file
-    prometheus_config = """\
-global:
-  scrape_interval: 10s
-
-scrape_configs:
-  - job_name: "flask_app"
-    static_configs:
-      - targets: ["localhost:8080"]
-  - job_name: "prometheus"
-    static_configs:
-      - targets: ["localhost:9090"]
-"""
-    ssh.exec_command(f"echo '{prometheus_config}' | sudo tee /etc/prometheus/prometheus.yml")
-    
-    # Ensure Prometheus service is restarted or started if not running
-    ssh.exec_command("sudo systemctl restart prometheus || sudo systemctl start prometheus")
-
-    print("✅ Monitoring setup complete!")
-    ssh.close()
-
-
 # ----------------------
 # MAIN DEPLOY SEQUENCE
 # ----------------------
@@ -486,11 +429,6 @@ def main():
     # **📌 Install Python dependencies AFTER EB is ready**
     instance_ip = get_eb_instance_ip(EB_ENV_NAME)
     install_dependencies(instance_ip, "/Users/tarunkatneni/Desktop/Cloud Computing/housingpredict.pem")
-
-    # **📌 Now set up Prometheus & Grafana**
-    setup_monitoring(EB_ENV_NAME)
-
-    print("🚀 Deployment complete with monitoring enabled!")
 
 
 if __name__ == "__main__":

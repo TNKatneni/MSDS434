@@ -34,10 +34,20 @@ def main():
     print("🛠️ Applying log transformation to price...")
     df["price"] = np.log1p(df["price"])  # log(1 + price) transformation
 
-    # Normalize acre_lot and house_size
-    print("📏 Normalizing acre_lot and house_size...")
+    # Remove outliers in acre_lot and house_size (top 1%)
+    df = df[df["acre_lot"] < df["acre_lot"].quantile(0.99)]
+    df = df[df["house_size"] < df["house_size"].quantile(0.99)]
+
+    # Apply log transformation to acre_lot to reduce skew
+    df["acre_lot"] = np.log1p(df["acre_lot"])
+
+    # Normalize house_size (but NOT acre_lot)
+    print("📏 Normalizing house_size...")
     scaler = MinMaxScaler()
-    df[["acre_lot", "house_size"]] = scaler.fit_transform(df[["acre_lot", "house_size"]])
+    df[["house_size"]] = scaler.fit_transform(df[["house_size"]])
+
+    # Debugging: Print min/max before and after scaling
+    print(f"Before Scaling - House Size: min={df['house_size'].min()}, max={df['house_size'].max()}")
 
     # Randomly sample data
     print(f"📊 Sampling {NUM_ROWS} rows out of {len(df)} total...")
