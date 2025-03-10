@@ -1,10 +1,3 @@
-"""
-scripts/destroy.py
-------------------
-Usage:
-    python destroy.py
-"""
-
 import time
 import boto3
 from botocore.exceptions import ClientError
@@ -77,7 +70,6 @@ def delete_sagemaker_endpoint(endpoint_name):
         print(f"Error deleting endpoint: {e}")
         return
 
-    # Wait for it to actually be deleted
     while True:
         time.sleep(10)
         try:

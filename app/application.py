@@ -10,7 +10,7 @@ from prometheus_flask_exporter import PrometheusMetrics
 app = Flask(__name__)
 application = app
 
-# Define /metrics endpoint
+# /metrics endpoint
 @app.route('/metrics', methods=['GET'])
 def metrics_endpoint():
     return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
@@ -51,7 +51,6 @@ def predict():
         )
         result = json.loads(response['Body'].read().decode("utf-8"))
 
-        # Extract the prediction from the result
         if isinstance(result, dict):
             prediction = result.get("predictions", [None])[0] or list(result.values())[0]
         elif isinstance(result, list):
@@ -59,7 +58,6 @@ def predict():
         else:
             prediction = result
 
-        # Convert the log-transformed prediction back to the full dollar value
         try:
             prediction = float(prediction)
             prediction = np.expm1(prediction)

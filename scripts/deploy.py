@@ -1,10 +1,3 @@
-"""
-scripts/deploy.py
------------------
-Usage:
-    python deploy.py
-"""
-
 import os
 import time
 import zipfile
@@ -30,7 +23,6 @@ EB_APP_NAME = "housing-app-tarun"
 EB_ENV_NAME = "housing-env-tarun"
 EB_PLATFORM = "Python 3.8 running on 64bit Amazon Linux 2"
 
-# Paths to your app folder
 APP_FOLDER = "app"
 APP_ZIPFILE = "app_bundle.zip"
 
@@ -68,7 +60,6 @@ def upload_file_to_s3(local_path, bucket_name, s3_key):
 def create_training_job(bucket_name, s3_data_key, region=REGION, role_arn=SAGEMAKER_ROLE_ARN):
     sm_client = boto3.client("sagemaker", region_name=region)
 
-    # Generate a unique training job name every time
     job_name = f"{SAGEMAKER_JOB_NAME_PREFIX}-{int(time.time())}"
     print(f"🚀 Starting new training job: {job_name}")
 
@@ -103,15 +94,16 @@ def create_training_job(bucket_name, s3_data_key, region=REGION, role_arn=SAGEMA
             "VolumeSizeInGB": 5
         },
         HyperParameters={
-            "num_round": "50",
-            "objective": "reg:squarederror"
+            "num_round": "100",
+            "objective": "reg:squarederror",
+             "early_stopping_rounds": "10"
         },
         StoppingCondition={
             "MaxRuntimeInSeconds": 3600
         },
     )
     print(f"✅ Created new training job: {job_name}")
-    return job_name  # Return the new training job name
+    return job_name 
 
 def wait_for_training_job(job_name, region=REGION):
     sm_client = boto3.client("sagemaker", region_name=region)
@@ -132,7 +124,6 @@ def wait_for_training_job(job_name, region=REGION):
 # ----------------------
 def create_sagemaker_model_and_endpoint(job_name, model_name, endpoint_config_name, endpoint_name, region=REGION):
     sm_client = boto3.client("sagemaker", region_name=region)
-    # Get details from the training job
     training_info = sm_client.describe_training_job(TrainingJobName=job_name)
     model_data_url = training_info["ModelArtifacts"]["S3ModelArtifacts"]
     container_image = training_info["AlgorithmSpecification"]["TrainingImage"]
@@ -170,7 +161,6 @@ def create_sagemaker_model_and_endpoint(job_name, model_name, endpoint_config_na
     )
     print(f"🚀 Creating endpoint: {endpoint_name}")
 
-    # Wait for the endpoint to be InService
     waiter = sm_client.get_waiter("endpoint_in_service")
     waiter.wait(EndpointName=endpoint_name)
     print(f"✅ Endpoint {endpoint_name} is now InService!")
@@ -208,7 +198,6 @@ def ensure_eb_app_exists(eb_client, app_name):
     if not apps:
         print(f"❌ EB application '{app_name}' not found. Creating it now...")
         eb_client.create_application(ApplicationName=app_name)
-        # Optionally, wait a few seconds for the app to be registered
         time.sleep(5)
         print(f"✅ Created EB application: {app_name}")
     else:
@@ -218,16 +207,13 @@ def deploy_eb_app(app_name, env_name, platform, version_label, bucket_name, app_
     eb_client = boto3.client("elasticbeanstalk", region_name=REGION)
     s3_client = boto3.client("s3", region_name=REGION)
 
-    # Ensure the EB application exists
     ensure_eb_app_exists(eb_client, app_name)
 
-    # Upload app bundle to S3
     s3_key = f"eb-deploy/{app_zip}"
-    app_zip_path = os.path.join("scripts", app_zip)  # Correct path in the project root
+    app_zip_path = os.path.join("scripts", app_zip)  
     print(f"Uploading app zip to s3://{bucket_name}/{s3_key}")
     s3_client.upload_file(app_zip_path, bucket_name, s3_key)
 
-    # Create application version
     print(f"Creating application version '{version_label}' for {app_name}")
     eb_client.create_application_version(
         ApplicationName=app_name,
@@ -236,7 +222,7 @@ def deploy_eb_app(app_name, env_name, platform, version_label, bucket_name, app_
             "S3Bucket": bucket_name,
             "S3Key": s3_key
         },
-        Process=True  # This tells EB to process the version
+        Process=True  
     )
 
     # Wait for application version to be processed
@@ -265,13 +251,11 @@ def deploy_eb_app(app_name, env_name, platform, version_label, bucket_name, app_
             VersionLabel=version_label,
             OptionSettings=[
                 {
-                    # So your Flask code knows which SageMaker endpoint to call
                     "Namespace": "aws:elasticbeanstalk:application:environment",
                     "OptionName": "SM_ENDPOINT_NAME",
                     "Value": ENDPOINT_NAME
                 },
                 {
-                    # This line associates your custom instance profile
                     "Namespace": "aws:autoscaling:launchconfiguration",
                     "OptionName": "IamInstanceProfile",
                     "Value": "aws-elasticbeanstalk-ec2-role-housing"
@@ -279,7 +263,7 @@ def deploy_eb_app(app_name, env_name, platform, version_label, bucket_name, app_
                 {
                     "Namespace": "aws:autoscaling:launchconfiguration",
                     "OptionName": "EC2KeyName",
-                    "Value": "housingpredict"  # Replace with your actual key pair name
+                    "Value": "housingpredict" 
                 }
             ]
         )
@@ -324,7 +308,7 @@ def wait_for_eb_ready(env_name):
             print(f"✅ {env_name} is Ready!")
             break
 
-        time.sleep(30)  # Wait 30 seconds before checking again
+        time.sleep(30) 
 
 
 def get_eb_instance_ip(env_name):
@@ -334,19 +318,16 @@ def get_eb_instance_ip(env_name):
     ec2_client = boto3.client("ec2", region_name=REGION)
     eb_client = boto3.client("elasticbeanstalk", region_name=REGION)
 
-    # Get EB environment information
     env_desc = eb_client.describe_environments(EnvironmentNames=[env_name])
     if not env_desc["Environments"]:
         raise Exception(f"❌ No environment found for {env_name}")
 
-    # Get EC2 instance ID from EB environment
     env_resources = eb_client.describe_environment_resources(EnvironmentId=env_desc["Environments"][0]["EnvironmentId"])
     instance_ids = [i["Id"] for i in env_resources["EnvironmentResources"]["Instances"]]
 
     if not instance_ids:
         raise Exception(f"❌ No running instances found for {env_name}")
 
-    # Get the public IP of the first instance
     reservations = ec2_client.describe_instances(InstanceIds=instance_ids)
     public_ip = reservations["Reservations"][0]["Instances"][0].get("PublicIpAddress", None)
 
@@ -392,7 +373,7 @@ def install_dependencies(instance_ip, ssh_key_path):
 
     for cmd in commands:
         ssh.exec_command(cmd)
-        time.sleep(5)  # Allow some time for installations
+        time.sleep(5) 
 
     print("✅ Dependencies installed!")
     ssh.close()
@@ -423,10 +404,10 @@ def main():
     VERSION_LABEL = f"v-{int(time.time())}"
     deploy_eb_app(EB_APP_NAME, EB_ENV_NAME, EB_PLATFORM, VERSION_LABEL, S3_BUCKET_NAME, APP_ZIPFILE)
 
-    # **📌 Wait for EB environment to be ready**
+    # Wait for EB environment to be ready
     wait_for_eb_environment(EB_ENV_NAME)
 
-    # **📌 Install Python dependencies AFTER EB is ready**
+    # Install Python dependencies AFTER EB is ready
     instance_ip = get_eb_instance_ip(EB_ENV_NAME)
     install_dependencies(instance_ip, "/Users/tarunkatneni/Desktop/Cloud Computing/housingpredict.pem")
 
