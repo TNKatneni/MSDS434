@@ -1,10 +1,15 @@
+import os
 import time
 import boto3
 from botocore.exceptions import ClientError
+from dotenv import load_dotenv
 
-REGION = "us-east-1"
-S3_BUCKET_NAME = "tarun-housing-bucket-2025"
-ENDPOINT_NAME = "my-housing-endpoint"
+# Load environment variables from .env
+load_dotenv()
+
+REGION = os.environ.get("AWS_REGION")
+S3_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME")
+ENDPOINT_NAME = os.environ.get("SM_ENDPOINT_NAME")
 ENDPOINT_CONFIG_NAME = "housing-xgboost-endpoint-config"
 MODEL_NAME = "housing-xgboost-model"
 SAGEMAKER_JOB_NAME = "housing-xgboost-job"

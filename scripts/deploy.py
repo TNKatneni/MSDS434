@@ -5,15 +5,21 @@ import boto3
 import botocore
 import paramiko
 from botocore.exceptions import ClientError
+from dotenv import load_dotenv
+
+# Load environment variables from .env
+load_dotenv()
 
 # ----------------------
 # CONFIGURATIONS
 # ----------------------
-REGION = "us-east-1"
-S3_BUCKET_NAME = "tarun-housing-bucket-2025"
+REGION = os.environ.get("AWS_REGION")
+S3_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME")
+SAGEMAKER_ROLE_ARN = os.environ.get("SAGEMAKER_ROLE_ARN")
+
+# If you want these in .env too, you can do so. Otherwise, hardcode them here:
 LOCAL_TRAINING_DATA = "data/sampled_data.csv"
 S3_TRAINING_KEY = "training_data/sampled_data.csv"
-SAGEMAKER_ROLE_ARN = "arn:aws:iam::131369287207:role/housingpredictrole"
 SAGEMAKER_JOB_NAME_PREFIX = "housing-xgboost-job"
 MODEL_NAME = "housing-xgboost-model"
 ENDPOINT_CONFIG_NAME = "housing-xgboost-endpoint-config"
@@ -96,7 +102,7 @@ def create_training_job(bucket_name, s3_data_key, region=REGION, role_arn=SAGEMA
         HyperParameters={
             "num_round": "100",
             "objective": "reg:squarederror",
-             "early_stopping_rounds": "10"
+            "early_stopping_rounds": "10"
         },
         StoppingCondition={
             "MaxRuntimeInSeconds": 3600
@@ -310,7 +316,6 @@ def wait_for_eb_ready(env_name):
 
         time.sleep(30) 
 
-
 def get_eb_instance_ip(env_name):
     """
     Retrieves the public IP address of the EC2 instance running Elastic Beanstalk.
@@ -322,7 +327,9 @@ def get_eb_instance_ip(env_name):
     if not env_desc["Environments"]:
         raise Exception(f"❌ No environment found for {env_name}")
 
-    env_resources = eb_client.describe_environment_resources(EnvironmentId=env_desc["Environments"][0]["EnvironmentId"])
+    env_resources = eb_client.describe_environment_resources(
+        EnvironmentId=env_desc["Environments"][0]["EnvironmentId"]
+    )
     instance_ids = [i["Id"] for i in env_resources["EnvironmentResources"]["Instances"]]
 
     if not instance_ids:
@@ -355,7 +362,9 @@ def wait_for_eb_environment(env_name, max_retries=30, delay=10):
                 return
         time.sleep(delay)
     
-    raise Exception(f"❌ EB environment '{env_name}' did not reach 'Ready' state after {max_retries * delay} seconds")
+    raise Exception(
+        f"❌ EB environment '{env_name}' did not reach 'Ready' state after {max_retries * delay} seconds"
+    )
 
 def install_dependencies(instance_ip, ssh_key_path):
     """
@@ -391,15 +400,17 @@ def main():
     wait_for_training_job(training_job_name)
 
     # 2.5 Create SageMaker model and endpoint automatically
-    create_sagemaker_model_and_endpoint(training_job_name, MODEL_NAME, ENDPOINT_CONFIG_NAME, ENDPOINT_NAME)
+    create_sagemaker_model_and_endpoint(
+        training_job_name, MODEL_NAME, ENDPOINT_CONFIG_NAME, ENDPOINT_NAME
+    )
 
     # 3. Deploy Flask app to Elastic Beanstalk
-    project_root = os.getcwd()  
-    os.chdir(APP_FOLDER)  
+    project_root = os.getcwd()
+    os.chdir(APP_FOLDER)
 
-    zip_app(".", os.path.join(project_root, "scripts", APP_ZIPFILE))  
+    zip_app(".", os.path.join(project_root, "scripts", APP_ZIPFILE))
 
-    os.chdir(project_root)  
+    os.chdir(project_root)
 
     VERSION_LABEL = f"v-{int(time.time())}"
     deploy_eb_app(EB_APP_NAME, EB_ENV_NAME, EB_PLATFORM, VERSION_LABEL, S3_BUCKET_NAME, APP_ZIPFILE)
@@ -409,7 +420,13 @@ def main():
 
     # Install Python dependencies AFTER EB is ready
     instance_ip = get_eb_instance_ip(EB_ENV_NAME)
-    install_dependencies(instance_ip, "/Users/tarunkatneni/Desktop/Cloud Computing/housingpredict.pem")
+
+    # Read the SSH private key path from an environment variable instead of hardcoding it.
+    ssh_key_path = os.environ.get("SSH_KEY_PATH")
+    if not ssh_key_path:
+        raise ValueError("SSH_KEY_PATH environment variable is not set. Please set it to the path of your SSH private key.")
+    
+    install_dependencies(instance_ip, ssh_key_path)
 
 
 if __name__ == "__main__":

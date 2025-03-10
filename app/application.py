@@ -6,6 +6,10 @@ import numpy as np
 from flask import Flask, request, jsonify
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from prometheus_flask_exporter import PrometheusMetrics
+from dotenv import load_dotenv
+
+# Load environment variables from .env
+load_dotenv()
 
 app = Flask(__name__)
 application = app
@@ -18,8 +22,9 @@ def metrics_endpoint():
 # Initialize Prometheus AFTER defining /metrics
 metrics = PrometheusMetrics(app)
 
-SM_ENDPOINT_NAME = os.environ.get("SM_ENDPOINT_NAME", "my-housing-endpoint")
-AWS_REGION = "us-east-1"
+# Use environment variable for SM_ENDPOINT_NAME and AWS_REGION
+SM_ENDPOINT_NAME = os.environ.get("SM_ENDPOINT_NAME")
+AWS_REGION = os.environ.get("AWS_REGION")
 
 @app.route('/', methods=['GET'])
 def health_check():
