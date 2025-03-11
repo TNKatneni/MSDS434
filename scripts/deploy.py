@@ -17,7 +17,6 @@ REGION = os.environ.get("AWS_REGION")
 S3_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME")
 SAGEMAKER_ROLE_ARN = os.environ.get("SAGEMAKER_ROLE_ARN")
 
-# If you want these in .env too, you can do so. Otherwise, hardcode them here:
 LOCAL_TRAINING_DATA = "data/sampled_data.csv"
 S3_TRAINING_KEY = "training_data/sampled_data.csv"
 SAGEMAKER_JOB_NAME_PREFIX = "housing-xgboost-job"
@@ -178,7 +177,7 @@ def zip_app(source_folder, zip_name):
     """
     Zip up the contents of source_folder into zip_name.
     """
-    zip_path = os.path.join(os.getcwd(), zip_name)  # Ensure full path
+    zip_path = os.path.join(os.getcwd(), zip_name)  
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
         for root, _, files in os.walk(source_folder):
             for f in files:
@@ -421,7 +420,6 @@ def main():
     # Install Python dependencies AFTER EB is ready
     instance_ip = get_eb_instance_ip(EB_ENV_NAME)
 
-    # Read the SSH private key path from an environment variable instead of hardcoding it.
     ssh_key_path = os.environ.get("SSH_KEY_PATH")
     if not ssh_key_path:
         raise ValueError("SSH_KEY_PATH environment variable is not set. Please set it to the path of your SSH private key.")
