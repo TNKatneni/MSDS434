@@ -3,7 +3,7 @@
 ## Final Documentation Reflection Paper (1-page)
 Google Drive Link: [PDF](https://drive.google.com/file/d/1eAvfH_inHBoWLcpYsWVdqo4GPEsJd9h6/view?usp=sharing)
 
-## Final Project Reflection
+## Final Project Reflection (2-page)
 Google Drive Link: [PDF](https://drive.google.com/file/d/1KAadpWYIohdyWb7d9VmmMN-TcwMzEYJS/view?usp=sharing) 
 
 ## Video Demonstrations
@@ -88,7 +88,7 @@ print("\nTesting Prediction Endpoint...")
 test_prediction()
 ```
 ## Monitoring with Prometheus 📊
-Prometheus is deployed alongside the application and can be accessed via a web interface.
+Prometheus is deployed alongside the application and can be accessed via a web interface. This project uses prometheus_flask_exporter to expose metrics from the Flask application
 
 The Prometheus UI can be accessed here: http://3.235.130.3:9090/
 
