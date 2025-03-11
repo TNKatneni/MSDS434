@@ -33,12 +33,21 @@ Google Drive Link: https://drive.google.com/drive/folders/1ViCtnuH5xBPZPYHfUDzNV
 
 
 ## API Testing Instructions 
-This Jupyter Notebook (`test.ipynb`) provides an interactive way to test the housing prediction API. It includes functions to check whether the API is running and send test data to get a predicted house price. To use the notebook, install the required dependencies with `pip install requests notebook`, then open it using `jupyter notebook test.ipynb`. Running the cells will verify the API status and send a sample request to the prediction endpoint. Below is the full notebook content for reference.
+This Jupyter Notebook (`test.ipynb`) provides an interactive way to test the housing prediction API. It includes functions to check whether the API is running and send test data to get a predicted house price. To use the notebook, simply copy and paste the code snippets into a jupyter notebook file and run. Running the first snippet will verify the API status. Running the second snippet will send a  request to the prediction endpoint. Below is the full notebook content for reference.
+
+### Health Check 
 ```python
+import os
 import requests
 import json
+from dotenv import load_dotenv
 
-API_URL = "http://housing-env-tarun.eba-erjum2zi.us-east-1.elasticbeanstalk.com/"
+# Load environment variables from .env file
+load_dotenv()
+
+API_URL = os.environ.get("API_URL")
+if not API_URL:
+    raise ValueError("API_URL is not set in the environment.")
 
 # Check API status
 def check_api_status():
@@ -48,13 +57,20 @@ def check_api_status():
     else:
         print("❌ API might not be running:", response.status_code, response.text)
 
+
+print("Checking API Status...")
+check_api_status()
+```
+
+### Prediction Request 
+```python
 # Test prediction request (Alter the payload values for testing)
 def test_prediction():
     payload = {
-        "bedrooms": 1,
-        "bathrooms": 2,
-        "lot_size": 0.2,
-        "house_size": 1500
+        "bedrooms": 6,
+        "bathrooms": 4,
+        "lot_size": 1.0,
+        "house_size": 3000
     }
     
     response = requests.post(f"{API_URL}/predict", json=payload)
@@ -64,12 +80,8 @@ def test_prediction():
     else:
         print("❌ Prediction failed:", response.status_code, response.text)
 
-print("Checking API Status...")
-check_api_status()
-
 print("\nTesting Prediction Endpoint...")
 test_prediction()
-
 ```
 ## Monitoring with Prometheus 📊
 Prometheus is deployed alongside the application and can be accessed via a web interface.
