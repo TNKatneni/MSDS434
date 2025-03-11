@@ -1,7 +1,10 @@
 # Housing Prediction Project 🏠
 
-## Final Documentation Reflection Paper 
-Google Drive Link: https://drive.google.com/file/d/1eAvfH_inHBoWLcpYsWVdqo4GPEsJd9h6/view?usp=sharing
+## Final Documentation Reflection Paper (1-page)
+Google Drive Link: [PDF]https://drive.google.com/file/d/1eAvfH_inHBoWLcpYsWVdqo4GPEsJd9h6/view?usp=sharing
+
+## Final Project Reflection
+Google Drive Link: [PDF](https://drive.google.com/file/d/1KAadpWYIohdyWb7d9VmmMN-TcwMzEYJS/view?usp=sharing) 
 
 ## Video Demonstrations
 Google Drive Link: https://drive.google.com/drive/folders/1ViCtnuH5xBPZPYHfUDzNVYKBDCdlXLeP?usp=drive_link
@@ -17,6 +20,7 @@ Google Drive Link: https://drive.google.com/drive/folders/1ViCtnuH5xBPZPYHfUDzNV
 - **app/**
 - .ebextensions/ – Elastic Beanstalk configuration
 - prometheus.config – Prometheus monitoring config
+- 01_environment.config - AWS config
 - application.py – Flask API application
 - requirements.txt – Required dependencies
 - **data/**
