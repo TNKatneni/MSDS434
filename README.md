@@ -1,7 +1,7 @@
 # Housing Prediction Project 🏠
 
 ## Final Documentation Reflection Paper (1-page)
-Google Drive Link: [PDF]https://drive.google.com/file/d/1eAvfH_inHBoWLcpYsWVdqo4GPEsJd9h6/view?usp=sharing
+Google Drive Link: [PDF](https://drive.google.com/file/d/1eAvfH_inHBoWLcpYsWVdqo4GPEsJd9h6/view?usp=sharing)
 
 ## Final Project Reflection
 Google Drive Link: [PDF](https://drive.google.com/file/d/1KAadpWYIohdyWb7d9VmmMN-TcwMzEYJS/view?usp=sharing) 
