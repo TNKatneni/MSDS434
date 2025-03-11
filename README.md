@@ -41,17 +41,11 @@ This Jupyter Notebook (`test.ipynb`) provides an interactive way to test the hou
 
 ### Health Check 
 ```python
-import os
 import requests
 import json
-from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
-
-API_URL = os.environ.get("API_URL")
-if not API_URL:
-    raise ValueError("API_URL is not set in the environment.")
+# Hardcoded API URL (for example purposes)
+API_URL = "http://housing-env-tarun.eba-mnugmpen.us-east-1.elasticbeanstalk.com/"
 
 # Check API status
 def check_api_status():
@@ -60,7 +54,6 @@ def check_api_status():
         print("✅ API is running:", response.json())
     else:
         print("❌ API might not be running:", response.status_code, response.text)
-
 
 print("Checking API Status...")
 check_api_status()
@@ -71,10 +64,10 @@ check_api_status()
 # Test prediction request (Alter the payload values for testing)
 def test_prediction():
     payload = {
-        "bedrooms": 6,
-        "bathrooms": 4,
+        "bedrooms": 3,
+        "bathrooms": 1,
         "lot_size": 1.0,
-        "house_size": 3000
+        "house_size": 1500
     }
     
     response = requests.post(f"{API_URL}/predict", json=payload)
@@ -90,5 +83,5 @@ test_prediction()
 ## Monitoring with Prometheus 📊
 Prometheus is deployed alongside the application and can be accessed via a web interface. This project uses prometheus_flask_exporter to expose metrics from the Flask application
 
-The Prometheus UI can be accessed here: http://3.235.130.3:9090/
+The Prometheus UI can be accessed here: [Prometheus UI](http://3.235.248.153:9090)
 
