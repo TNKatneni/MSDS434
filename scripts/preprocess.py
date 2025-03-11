@@ -43,10 +43,6 @@ def main():
     df["bed"] = df["bed"].astype(float)
     df["bath"] = df["bath"].astype(float)
 
-    # Print unique values to verify bins
-    print(f"Unique bed values: {df['bed'].unique()}")
-    print(f"Unique bath values: {df['bath'].unique()}")
-
     # Randomly sample data
     print(f"📊 Sampling {NUM_ROWS} rows out of {len(df)} total...")
     df_sampled = df.sample(n=min(NUM_ROWS, len(df)), random_state=42)

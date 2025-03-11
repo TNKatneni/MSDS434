@@ -1,2 +1,3 @@
 data/raw_housing_data.csv
 .env
+01_environment.config
